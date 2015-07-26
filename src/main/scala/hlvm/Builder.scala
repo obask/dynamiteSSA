@@ -7,26 +7,24 @@ import scala.collection.mutable
 
 case class Builder() {
 
-  var bb: BasicBlock = null
+  var bb = BasicBlock("entry")
 
   def setInsertPoint(bb1: BasicBlock) = {
     bb = bb1
   }
 
-
-  var currentPos = Position(0)
-
-
   def createRet(v: Value) = null
 
   def createAlloca(v: Type) = {
-    currentPos = currentPos.next
-    Alloca(currentPos, v)
+    val tmp = Alloca(bb.currentPos, v)
+    bb.append(tmp)
+    tmp
   }
 
   def createAlloca(v: Type, size: Value, twine: String): Value = {
-    currentPos = currentPos.next
-    AllocaArray(currentPos, v, size)
+    val tmp = AllocaArray(bb.currentPos, v, size)
+    bb.append(tmp)
+    tmp
   }
 
   def createLoad(ptr: Value): Value = null
@@ -42,8 +40,9 @@ case class Builder() {
   def createPHI(t: Type, n: Int, twine: String): PHINode = null
 
   def createCall(fn: Function, args: Seq[Value]): Value = {
-    currentPos = currentPos.next
-    CallInst(currentPos, fn, args)
+    val tmp = CallInst(bb.currentPos, fn, args)
+    bb.append(tmp)
+    tmp
   }
 
 

@@ -71,7 +71,6 @@ object IRNode {
 
     }
 
-
   }
 
 
@@ -91,8 +90,6 @@ object IRNode {
   }
 
   case class DefDef(name: ASymbol, args: ABranch, body: CodeTree) extends IRNode {
-
-
     def handleIR(): Unit = {
       println("def handleDefDef " + name + " " + args.params.size)
       val ptr2Object = Type.LLVMPointerType(TheModule.getTypeByName("struct.Object"))
@@ -103,6 +100,7 @@ object IRNode {
       val theFunctionX = TheModule.functionCreate(ft, externalLinkage = true, name.value)
       // Create a new basic block to start insertion into.
       val bb = BasicBlock("entry")
+      TheModule.functionSetBody(name.value, ft, bb)
       builder.setInsertPoint(bb)
       //
       val ret = ExprNode(builder).handleValue(body)

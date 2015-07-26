@@ -19,9 +19,18 @@ case class Module() {
     fun
   }
 
+
+  def functionSetBody(name: String, ft: FunctionType, bb: BasicBlock): Function = {
+    val fun = Function(name, ft, bb)
+    functions(name) = fun
+    fun
+  }
+
+
   def getFunction(name: String) = {
     functions(name)
   }
+
 
 
 }

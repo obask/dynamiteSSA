@@ -2,20 +2,42 @@ package hlvm
 
 import ast.{ASymbol, CodeTree, ABranch}
 
-sealed trait Type
-case object VoidTy extends Type
-case object Int8Ty extends Type
-case object Int32Ty extends Type
-case object Int64Ty extends Type
+sealed trait Type {
+  def repr: String
 
+}
 
-case class PointerType(ch: Type) extends Type
-case class StructType(name: String, fields: Option[Seq[Type]]) extends Type
-case class FunctionType(ret: Type, args: Seq[Type]) extends Type
+trait SimpleType extends Type {
+  def repr: String = {
+    toString
+  }
+}
+
+case object VoidTy extends SimpleType
+case object Int8Ty extends SimpleType
+case object Int32Ty extends SimpleType
+case object Int64Ty extends SimpleType
+
+case class PointerType(ch: Type) extends Type {
+    def repr: String = {
+      ch.repr + "*"
+    }
+}
+
+case class StructType(name: String, fields: Option[Seq[Type]]) extends Type {
+  def repr: String = {
+    name
+  }
+}
+
+case class FunctionType(ret: Type, args: Seq[Type]) extends Type {
+  def repr: String = {
+    ???
+  }
+}
 
 
 object Type {
-
 
   def LLVMPointerType(x: Type): Type = null
 

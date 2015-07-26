@@ -63,12 +63,6 @@ object Hello {
 
 
 
-
-
-
-
-
-
   val programFile = Source.fromURL(getClass.getResource("/code.ir"))
 
   val myLispProgram = programFile.getLines().mkString("\n")
@@ -79,6 +73,10 @@ object Hello {
     for (t1 <- tree) {
       println("PROCEED: " + t1.asInstanceOf[ABranch].cmd)
       IRNode.handleAST(t1)
+    }
+
+    for (xx <- IRNode.TheModule.getFunction("main1").bb.code) {
+      xx.dump()
     }
 
   }
