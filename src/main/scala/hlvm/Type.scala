@@ -2,73 +2,50 @@ package hlvm
 
 import ast.{ASymbol, CodeTree, ABranch}
 
+sealed trait Type
+case object VoidTy extends Type
+case object Int8Ty extends Type
+case object Int32Ty extends Type
+case object Int64Ty extends Type
+
+
+case class PointerType(ch: Type) extends Type
+case class StructType(name: String, fields: Option[Seq[Type]]) extends Type
+case class FunctionType(ret: Type, args: Seq[Type]) extends Type
+
 
 object Type {
 
 
-
-
   def LLVMPointerType(x: Type): Type = null
 
-  def getTypeOfName(typeName: String): Type = {
-    //    if (typeName == "EmptyTree") {
-    //      return Type::getVoidTy(C);
-    //    }
-    //    if (typeName == "String") {
-    //      return PointerType::getUnqual(IntegerType::getInt8Ty(C));
-    //    }
-    //    if (typeName == "Int") {
-    //      return IntegerType::getInt32Ty(C);
-    //    }
-    //    if (typeName == "Long") {
-    //      return IntegerType::getInt64Ty(C);
-    //    }
-    //    if (typeName == "Boolean") {
-    //      return IntegerType::getInt32Ty(C);
-    //    }
-    //    StructType *pType = TheModule->getTypeByName("struct." + typeName);
-    //    if (!pType) {
-    //      pType = StructType::create(TheModule->getContext(), "struct." + typeName);
-    //    }
-    //    assert(pType);
-    //    return PointerType::getUnqual(pType);
-    null
-  }
-
-
-  //  Type *getPtrToOpaqueTypes(SyntaxTreeP typeNameX) {
-  //    // array types
-  //    if (typeid(*typeNameX) == typeid(ABranch) && typeNameX->elemAt(0)->getString() == "Array") {
-  //      auto typeName = typeNameX->elemAt(1)->getString();
-  //      Type *typeOfName = getTypeOfName(typeName);
-  //      return PointerType::getUnqual(typeOfName);
-  //    }
-  //    // else simple type
-  //    auto typeName = typeNameX->getString();
-  //    return getTypeOfName(typeName);
-  //  }
 
   def getPtrToOpaqueTypes(typeName: CodeTree): Type = {
     typeName match {
       case ABranch("Array", List(typeArg)) =>
         val x: Type = getTypeOfName(typeArg.toString)
-        LLVMPointerType(x)
+        PointerType(x)
       case tp: ASymbol =>
         getTypeOfName(tp.value)
     }
-
-
   }
 
-  def getInt32Ty: Type = null
-
-
-  def getFunctionType(ret: Type, args: Seq[Type], b: Boolean): Type = null
+  def getTypeOfName(typeName: String): Type = {
+    typeName match {
+      case "EmptyTree" => VoidTy
+      case "String" => PointerType(Int8Ty)
+      case "Int" => Int32Ty
+      case "Long" => Int64Ty
+      case "Boolean" => Int8Ty
+      case _ =>
+        val pType = StructType(typeName, None)
+        PointerType(pType)
+    }
+  }
 
 
 
 }
 
-case class Type()
 
 
