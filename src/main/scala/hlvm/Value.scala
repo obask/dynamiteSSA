@@ -25,12 +25,15 @@ sealed trait Value {
 
 }
 
+
+
+
 case class ConstantLong(pos: Position, value: Long) extends Value {
 
   val getType: Type = Int32Ty
 
   def dump(): Unit = {
-    println(value)
+    Pretty.printLine(value)
   }
 
 
@@ -45,7 +48,7 @@ case class ConstantString(pos: Position, value: String) extends Value {
 
   def dump(): Unit = {
 //    println(getType + pos.toString + " = " + value + ";")
-    println(value)
+    Pretty.printLine(value)
 
   }
 
@@ -53,40 +56,75 @@ case class ConstantString(pos: Position, value: String) extends Value {
 
 }
 
-case class PHINode(pos: Position) extends Value {
+case class Store(pos: Position, src: Value, dst: Value) extends Value {
 
-  def addIncoming(v: Value, bb: BasicBlock) = null
+  val getType: Type = dst.getType
 
-  val getType: Type = null
+  def dump(): Unit = {
+    Pretty.printLine(dst.repr + " = " + src.repr + ";")
+  }
 
-  def dump(): Unit = ???
-
-  def repr: String = ???
+  def repr: String = null
 
 }
 
 
-case class Alloca(pos: Position, ty: Type) extends Value {
+case class Return(pos: Position, v: Value) extends Value {
+
+  val getType: Type = v.getType
+
+  def dump(): Unit = {
+    Pretty.printLine("return " + v.repr + ";")
+  }
+
+  def repr: String = null
+
+}
+
+
+
+case class Cond(pos: Position, ty: Type, cond: Value, thenBr: BasicBlock, elseBr: BasicBlock) extends Value {
 
   val getType: Type = ty
 
   def dump(): Unit = {
-    println(getType.repr + " " + pos.toString + ";")
+    Pretty.printLine("if (" + cond.repr + ") {")
+    Pretty.shiftRight()
+    for (xx <- thenBr.code) {
+      xx.dump()
+    }
+    Pretty.shiftLeft()
+    Pretty.printLine("} else {")
+    Pretty.shiftRight()
+    for (xx <- elseBr.code) {
+      xx.dump()
+    }
+    Pretty.shiftLeft()
+    Pretty.printLine("}")
   }
-
 
   def repr: String = pos.toString
 
-
 }
 
-
-case class AllocaArray(pos: Position, ty: Type, cnt: Value) extends Value {
+case class Alloca(pos: Position, ty: Type, twine: String) extends Value {
 
   val getType: Type = ty
 
   def dump(): Unit = {
-    println(getType.repr + " " + pos.toString + "[" + cnt.repr + "];")
+    Pretty.printLine(getType.repr + " " + twine + ";")
+  }
+
+  def repr: String = twine
+
+}
+
+case class AllocaArray(pos: Position, ty: Type, cnt: Value, twine: String) extends Value {
+
+  val getType: Type = ty
+
+  def dump(): Unit = {
+    Pretty.printLine(getType.repr + " " + twine + "[" + cnt.repr + "];")
   }
 
   def repr: String = pos.toString
@@ -99,9 +137,10 @@ case class CallInst(pos: Position, fn: hlvm.Function, args: Seq[Value]) extends 
 
 
   def dump(): Unit = {
-    println(getType.repr + " " + pos.toString + " = " + fn.name + args.map(_.repr) + ";")
+    Pretty.printLine("const " + getType.repr + " " + pos.toString + " = " + fn.name + args.map(_.repr) + ";")
   }
 
   def repr: String = pos.toString
 
 }
+

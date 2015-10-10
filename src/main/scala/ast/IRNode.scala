@@ -10,6 +10,7 @@ object IRNode {
 
   val TheModule = Module()
   val builder = Builder()
+  var CurrentFunction: Function = null
 
   val NamedValues = mutable.Map[String, Value]()
 
@@ -59,7 +60,7 @@ object IRNode {
     def handleIR(): Unit = {
       println("handleValDef: " + varName)
       val calcResult = ExprNode(builder).handleValue(valueX)
-      val ptrContext = builder.createAlloca(calcResult.getType)
+      val ptrContext = builder.createAlloca(calcResult.getType, varName.value)
 
       // Add arguments to variable symbol table.
       // FIXME should shadow up to stack vars
@@ -99,10 +100,11 @@ object IRNode {
       val ft = FunctionType(ptr2Object, proto)
       val theFunctionX = TheModule.functionCreate(ft, externalLinkage = true, name.value)
       // Create a new basic block to start insertion into.
-      val bb = BasicBlock("entry")
+      val bb = BasicBlock.newBasicBlock("entry")
       TheModule.functionSetBody(name.value, ft, bb)
       builder.setInsertPoint(bb)
       //
+      CurrentFunction = theFunctionX
       val ret = ExprNode(builder).handleValue(body)
       //    RetVal->dump();
       if (ret != null) {
@@ -118,6 +120,8 @@ object IRNode {
       } else {
         null
       }
+      CurrentFunction = null
+
     }
 
 

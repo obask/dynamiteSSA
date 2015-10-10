@@ -2,9 +2,9 @@ package hlvm
 
 import scala.collection.mutable
 
-case class BasicBlock(s: String) {
 
-  val code = mutable.ArrayBuffer[Value]()
+
+case class BasicBlock(s: String, code: mutable.ArrayBuffer[Value]) {
 
   var currentPos = Position(0)
 
@@ -21,6 +21,16 @@ case class BasicBlock(s: String) {
     for (v <-  code) {
       println("  " + v.dump() + "")
     }
+  }
+
+}
+
+
+
+object BasicBlock {
+
+  def newBasicBlock(s: String) = {
+    BasicBlock(s, mutable.ArrayBuffer[Value]())
   }
 
 }

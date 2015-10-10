@@ -36,13 +36,17 @@
 
 (DefDef main1 (#  )
     (Block
-        (ValDef tt (ArrayCreate Int 12 ))
-        (ArrayAssign tt 2 1 )
-        (ValDef LLVMCCallConv 0 )
-        (ValDef ctx (LLVMGetGlobalContext ) )
-        (ValDef mod (LLVMModuleCreateWithName "debug.ll" ) )
+        (ValDef tt 123)
 
-        (LLVMDumpModule mod )
+        (ValDef xxx (If tt
+            (Block 43)
+            Else
+            (Block
 
+            (If tt
+                        (Block 666)
+                        Else
+                        (Block 666))
+            )))
 
         (newString "helloDotty!" ) ) )

@@ -74,33 +74,38 @@ case class ExprNode(builder: Builder) {
 
     def handleExpr(): Value = {
       println("handleIfExpr: " + cond)
-      
+
+      println("thenBranch = " + thenBranch)
+      println("elseBranch = " + elseBranch)
+      println("-----")
+
       val condVal = handleValue(cond)
+
+      val bb = builder.bb
 
       // Create blocks for the then and else cases.  Insert the 'then' block at the
       // end of the function.
-      val thenBB = BasicBlock("then")
-      val elseBB = BasicBlock("else")
-      val mergeBB = BasicBlock("ifCont")
+      val thenBB = BasicBlock.newBasicBlock("then")
+      val elseBB = BasicBlock.newBasicBlock("else")
 
-      builder.createCondBr(condVal, thenBB, elseBB)
+      val retVal = builder.createAlloca(Int32Ty, "iftmp")
+      val condBr: Cond = builder.createCondBr(condVal, thenBB, elseBB)
 
       // Emit then value.
       builder.setInsertPoint(thenBB)
       val thenVal = ExprNode(builder).handleValue(thenBranch)
+      builder.createStore(thenVal, retVal)
 
       // Emit else block.
 //      TheFunction->getBasicBlockList().push_back(ElseBB);
       builder.setInsertPoint(elseBB)
       val elseVal = ExprNode(builder).handleValue(elseBranch)
+      builder.createStore(elseVal, retVal)
 
-      val phiNode = builder.createPHI(thenVal.getType, 2, "iftmp")
-      phiNode.addIncoming(thenVal, thenBB)
-      phiNode.addIncoming(elseVal, elseBB)
+      builder.setInsertPoint(bb)
 
-      phiNode
+      retVal
     }
-
 
   }
 
@@ -113,15 +118,15 @@ case class ExprNode(builder: Builder) {
 
   }
 
-    case class Call(op: String, args: Seq[CodeTree]) {
+  case class Call(op: String, args: Seq[CodeTree]) {
 
-    def handleExpr(): Value = {
-      println("handleCall " + op + " : " + args.size)
-      val calcArgs = args.map(handleValue)
-      val func = IRNode.TheModule.getFunction(op)
-      builder.createCall(func, calcArgs)
+  def handleExpr(): Value = {
+    println("handleCall " + op + " : " + args.size)
+    val calcArgs = args.map(handleValue)
+    val func = IRNode.TheModule.getFunction(op)
+    builder.createCall(func, calcArgs)
 
-    }
+  }
 
 
 
