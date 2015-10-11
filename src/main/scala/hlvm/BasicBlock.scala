@@ -19,7 +19,7 @@ case class BasicBlock(s: String, code: mutable.ArrayBuffer[Value]) {
     var ss = ""
     println("/* Basic Block: " + s + " */")
     for (v <-  code) {
-      println("  " + v.dump() + "")
+      println("  " + v.codegen + "")
     }
   }
 

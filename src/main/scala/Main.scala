@@ -22,7 +22,7 @@ object Main {
     }
 
     //    IRNode.TheModule.getFunction("main1").dump()
-        IRNode.TheModule.getFunction("intToLong").dump()
+    println(IRNode.TheModule.getFunction("main1").codegen.mkString("\n"))
 //    println(IRNode.TheModule.functions.keys)
 
   }

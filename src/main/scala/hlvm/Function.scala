@@ -4,7 +4,7 @@ import ast.IRNode
 
 import scala.collection.mutable
 
-case class Function(name: String, t: FunctionType, bb: BasicBlock) {
+case class Function(name: String, t: FunctionType, args: Seq[String], bb: BasicBlock) {
 
   val names = mutable.Map[String, Int]()
 
@@ -14,20 +14,21 @@ case class Function(name: String, t: FunctionType, bb: BasicBlock) {
     "$" + name + res
   }
 
-
+  val getType: Type = this.t
 
   def getRetType: Type = t.ret
 
-  def dump() = {
-    println("TYPE:", this.t)
-    Pretty.printLine("FUNCTION: " + name + " {")
-    Pretty.shiftRight()
-    for (xx <- bb.code) {
-      xx.dump()
-    }
-    Pretty.shiftLeft()
-    Pretty.printLine("}")
+  def codegen: Seq[String]  = {
+    print(t)
+    Seq(this.t.ret.repr) ++
+    Seq(this.name + " (" + this.t.args.map(_.repr).mkString(", ")) ++
+    Seq("{") ++
+    Pretty.shiftRight(bb.code.flatMap(_.codegen)) ++
+    Seq("}")
   }
 
+  def repr: String = {
+    this.name
+  }
 
 }

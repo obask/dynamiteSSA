@@ -93,15 +93,14 @@ object IRNode {
   case class DefDef(name: ASymbol, args: ABranch, body: CodeTree) extends IRNode {
     def handleIR(): Unit = {
       println("def handleDefDef " + name + " " + args.params.size)
-      val ptr2Object = Type.LLVMPointerType(TheModule.getTypeByName("struct.Object"))
-      // TODO compex type not works
-      // TODO move copy paste code to handlePrototype
-      val proto = args.params.map(Type.getPtrToOpaqueTypes)
-      val ft = FunctionType(ptr2Object, proto)
-      val theFunctionX = TheModule.functionCreate(ft, externalLinkage = true, name.value)
+
+//      val ptr2Object = Type.LLVMPointerType(TheModule.getTypeByName("struct.Object"))
+//      val proto = args.params.map(Type.getPtrToOpaqueTypes)
+//      val ft = FunctionType(ptr2Object, proto)
+//      val theFunctionX = TheModule.functionCreate(ft, externalLinkage = true, name.value)
       // Create a new basic block to start insertion into.
       val bb = BasicBlock.newBasicBlock("entry")
-      TheModule.functionSetBody(name.value, ft, bb)
+      val theFunctionX = TheModule.functionSetBody(name.value, bb)
       builder.setInsertPoint(bb)
       //
       CurrentFunction = theFunctionX

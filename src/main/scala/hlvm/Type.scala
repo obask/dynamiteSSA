@@ -32,7 +32,7 @@ case class StructType(name: String, fields: Option[Seq[Type]]) extends Type {
 
 case class FunctionType(ret: Type, args: Seq[Type]) extends Type {
   def repr: String = {
-    ???
+    ret + "(* lambda)(" + args.map(_.repr).mkString(", ") + ")"
   }
 }
 

@@ -14,7 +14,7 @@ case class Position(curr: Int) {
 sealed trait Value {
 
 
-  def dump(): Unit
+  def codegen: Seq[String]
 
   val getType: Type
 
@@ -32,13 +32,11 @@ case class ConstantLong(pos: Position, value: Long) extends Value {
 
   val getType: Type = Int32Ty
 
-  def dump(): Unit = {
-    Pretty.printLine(value)
+  def codegen: Seq[String]  = {
+    Seq(value.toString)
   }
 
-
   def repr: String = value.toString
-
 
 }
 
@@ -46,10 +44,9 @@ case class ConstantString(pos: Position, value: String) extends Value {
 
   val getType: Type = PointerType(Int8Ty)
 
-  def dump(): Unit = {
+  def codegen: Seq[String]  = {
 //    println(getType + pos.toString + " = " + value + ";")
-    Pretty.printLine(value)
-
+    Seq(value)
   }
 
   def repr: String = "\"" + value.toString + "\""
@@ -60,8 +57,8 @@ case class Store(pos: Position, src: Value, dst: Value) extends Value {
 
   val getType: Type = dst.getType
 
-  def dump(): Unit = {
-    Pretty.printLine(dst.repr + " = " + src.repr + ";")
+  def codegen: Seq[String]  = {
+    Seq(dst.repr + " = " + src.repr + ";")
   }
 
   def repr: String = null
@@ -73,8 +70,8 @@ case class Return(pos: Position, v: Value) extends Value {
 
   val getType: Type = v.getType
 
-  def dump(): Unit = {
-    Pretty.printLine("return " + v.repr + ";")
+  def codegen: Seq[String]  = {
+    Seq("return " + v.repr + ";")
   }
 
   def repr: String = null
@@ -87,20 +84,12 @@ case class Cond(pos: Position, ty: Type, cond: Value, thenBr: BasicBlock, elseBr
 
   val getType: Type = ty
 
-  def dump(): Unit = {
-    Pretty.printLine("if (" + cond.repr + ") {")
-    Pretty.shiftRight()
-    for (xx <- thenBr.code) {
-      xx.dump()
-    }
-    Pretty.shiftLeft()
-    Pretty.printLine("} else {")
-    Pretty.shiftRight()
-    for (xx <- elseBr.code) {
-      xx.dump()
-    }
-    Pretty.shiftLeft()
-    Pretty.printLine("}")
+  def codegen: Seq[String]  = {
+    Seq("if (" + cond.repr + ") {") ++
+      Pretty.shiftRight(thenBr.code.flatMap(_.codegen)) ++
+      Seq("} else {") ++
+      Pretty.shiftRight(elseBr.code.flatMap(_.codegen)) ++
+      Seq("}")
   }
 
   def repr: String = pos.toString
@@ -111,8 +100,8 @@ case class Alloca(pos: Position, ty: Type, twine: String) extends Value {
 
   val getType: Type = ty
 
-  def dump(): Unit = {
-    Pretty.printLine(getType.repr + " " + twine + ";")
+  def codegen: Seq[String]  = {
+    Seq(getType.repr + " " + twine + ";")
   }
 
   def repr: String = twine
@@ -123,8 +112,8 @@ case class AllocaArray(pos: Position, ty: Type, cnt: Value, twine: String) exten
 
   val getType: Type = ty
 
-  def dump(): Unit = {
-    Pretty.printLine(getType.repr + " " + twine + "[" + cnt.repr + "];")
+  def codegen: Seq[String]  = {
+    Seq(getType.repr + " " + twine + "[" + cnt.repr + "];")
   }
 
   def repr: String = pos.toString
@@ -136,8 +125,8 @@ case class CallInst(pos: Position, fn: hlvm.Function, args: Seq[Value]) extends 
   val getType: Type = fn.getRetType
 
 
-  def dump(): Unit = {
-    Pretty.printLine("const " + getType.repr + " " + pos.toString + " = " + fn.name + args.map(_.repr) + ";")
+  def codegen: Seq[String]  = {
+    Seq("const " + getType.repr + " " + pos.toString + " = " + fn.name + args.map(_.repr) + ";")
   }
 
   def repr: String = pos.toString
