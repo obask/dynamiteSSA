@@ -28,13 +28,16 @@ object Parser {
   }
 
 
-  def tokenize(ss: String): Array[LToken] = {
-    val ss1 = ss.replace("(", " ( ").replace(")", " ) ")
-    val tokens = Array(ss1) flatMap (_ split " ") flatMap (_ split "\n") filter (!_.isEmpty)
+  def tokenize(ss0: String): Array[LToken] = {
+    val ss1 = ss0.replace("(", " ( ").replace(")", " ) ")
+    val ss2 = ss1.replace("[", " [ ").replace("]", " ] ")
+    val tokens = Array(ss2) flatMap (_ split " ") flatMap (_ split "\n") flatMap (_ split "\t") filter (!_.isEmpty)
     for (ss <- tokens)
       yield ss match {
         case "(" => LeftParenthesis
+        case "[" => LeftParenthesis
         case ")" => RightParenthesis
+        case "]" => RightParenthesis
         case x => toSomeInt(x).map(LInt).getOrElse(
           toSomeDouble(x).map(LDouble).getOrElse(
             LAtom(x)))

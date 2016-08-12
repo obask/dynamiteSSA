@@ -1,0 +1,40 @@
+(PackageDef
+  (Ident <empty>)
+  (#
+   (TypeDef
+    Enterprise$
+    (Template
+     (DefDef
+      <init>
+      Nil
+      (# Nil)
+      (TypeTree (TypeRef (ThisType (TypeRef (NoPrefix) scala)) Unit))
+      (Block
+       (% (Apply (Select (Super (This Enterprise$) Nil) <init>) Nil))
+       (Literal (Constant Unit))))
+     (# (TypeTree (TypeRef (ThisType (TypeRef (NoPrefix) lang)) Object)))
+     (ValDef _ EmptyTree EmptyTree)
+     (#
+      (DefDef
+       main
+       Nil
+       (#
+        (#
+         (ValDef
+          args
+          (TypeTree
+           (JavaArrayType
+            (TypeRef (ThisType (TypeRef (NoPrefix) lang)) String)))
+          EmptyTree)))
+       (TypeTree (TypeRef (ThisType (TypeRef (NoPrefix) scala)) Unit))
+       (Apply (Ident println) (# (Literal (Constant "Hello World"))))))))
+   (ValDef
+    Enterprise
+    (TypeTree (TypeRef (ThisType (TypeRef (NoPrefix) <empty>)) Enterprise$))
+    (Apply
+     (Select
+      (New
+       (TypeTree
+        (TypeRef (ThisType (TypeRef (NoPrefix) <empty>)) Enterprise$)))
+      <init>)
+     Nil))))

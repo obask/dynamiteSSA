@@ -1,6 +1,5 @@
 package ast
 
-import ast.ExprNode
 import hlvm._
 
 import scala.collection.mutable
@@ -100,7 +99,7 @@ object IRNode {
 //      val theFunctionX = TheModule.functionCreate(ft, externalLinkage = true, name.value)
       // Create a new basic block to start insertion into.
       val bb = BasicBlock.newBasicBlock("entry")
-      val theFunctionX = TheModule.functionSetBody(name.value, bb)
+      val theFunctionX = TheModule.functionSetBody(name.value, Seq(), bb)
       builder.setInsertPoint(bb)
       //
       CurrentFunction = theFunctionX
