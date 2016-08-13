@@ -64,6 +64,7 @@ object Parser {
         case LAtom(x) => makeAST(tokens.tail, ASymbol(x) :: state)
         case RightParenthesis =>
           val params = state.reverse
+//          println(params)
           (ABranch(params.head.toString, params.tail), tokens.tail)
       }
     }

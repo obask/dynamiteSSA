@@ -1,10 +1,11 @@
 package ast
 
+import core.Types.Type
+
 import scala.language.higherKinds
 
 
 abstract class Context
-abstract class Type
 
 abstract class Name {
   /** Is this name a type name? */
@@ -18,18 +19,17 @@ abstract class Name {
 case class TermName(s: String) extends Name {
   def isTypeName = false
   def isTermName = true
+
+  override def toString: String = s
 }
 
-case class TypeName(s: String) extends Name {
-  type ThisName = TypeName
+case class TypeName(s: String) extends Name with Type {
   def isTypeName = true
   def isTermName = false
   def toTypeName = this
   def asTypeName = this
 
 }
-
-
 
 case class Signature(paramsSig: List[TypeName], resSig: TypeName)
 case class Constant(value: Any)
@@ -188,7 +188,7 @@ object Trees {
   }
 
   /** qual.this */
-  case class This private[ast](qual: TypeName)
+  case class This private[ast](qual: Name)
     extends DenotingTree with TermTree {
   }
 
@@ -295,9 +295,7 @@ object Trees {
     * After program transformations this is not necessarily the enclosing method, because
     * closures can intervene.
     */
-  case class Return private[ast](expr: Tree, from: Tree)
-    extends TermTree {
-  }
+  case class Return private[ast](expr: Tree, from: Tree) extends TermTree
 
   /** try block catch handler finally finalizer
     *
@@ -331,17 +329,18 @@ object Trees {
   }
 
   /** Array(elems) */
-  class JavaSeqLiteral[T >: Untyped] private[ast](elems: List[Tree], elemtpt: Tree)
-    extends SeqLiteral(elems, elemtpt) {
+  case class JavaSeqLiteral private[ast](elems: List[Tree], elemtpt: Tree)
+    extends Tree {
+
     override def toString = s"JavaSeqLiteral($elems, $elemtpt)"
   }
 
   /** A type tree that represents an existing or inferred type */
-  case class TypeTree private[ast](original: Tree)
+  case class TypeTree private[ast](original: Any)
     extends DenotingTree with TypTree {
     type ThisTree = TypeTree
 
-    override def isEmpty = !hasType && original.isEmpty
+    override def isEmpty = ???
   }
 
   /** ref.type */
@@ -441,19 +440,20 @@ object Trees {
   }
 
   /** mods val name: tpt = rhs */
-  case class ValDef private[ast](name: TermName, tpt: Tree, private var preRhs: LazyTree)
+  case class ValDef private[ast](name: TermName, tpt: Tree, preRhs: Tree)
     extends ValOrDefDef {
     type ThisTree = ValDef
-
-    assert(isEmpty || tpt != genericEmptyTree)
 
     def unforced = preRhs
 
   }
 
   /** mods def name[tparams](vparams_1)...(vparams_n): tpt = rhs */
-  case class DefDef private[ast](name: TermName, tparams: List[TypeDef],
-                                                vparamss: List[List[ValDef]], tpt: Tree, private var preRhs: LazyTree)
+  case class DefDef private[ast](name: TermName,
+                                 tparams: List[TypeDef],
+                                 vparamss: List[List[ValDef]],
+                                 tpt: Tree,
+                                 private var preRhs: LazyTree)
     extends ValOrDefDef {
     type ThisTree = DefDef
     assert(tpt != genericEmptyTree)
