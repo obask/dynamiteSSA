@@ -1,3 +1,5 @@
+(Apply (Ident println) (# (Literal (Constant "Hello World"))))
+
 (PackageDef
   (Ident <empty>)
   (#
