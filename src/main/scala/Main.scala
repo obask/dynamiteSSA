@@ -74,14 +74,13 @@ object Main {
         handleType(tree)
       case ABranch("TypeTree", params) => TypeTree(handleType(params.head))
       case ABranch("Constant", params) =>
-        val args = params.map(_.asInstanceOf[ASymbol].value)
-        args match {
-          //                FIXME remove this line
-          case Seq("Unit") => Constant(Unit)
-          case ll: List[String] => Constant(ll.mkString(" "))
-          case _ => createCaseClass(Constant, args)
+        params match {
+          case Seq(ANumber(x)) => Constant(x)
+          case Seq(ASymbol("Unit")) => Constant(Unit)
+          case ll: List[ASymbol] =>
+            val tmp = ll.map(_.value).mkString(" ")
+            Constant(tmp)
         }
-
       case ABranch(cmd, params) =>
         println(cmd)
         val args = params.map(handleAST)
@@ -133,7 +132,7 @@ object Main {
     }
   }
 
-  val programFile = Source.fromURL(getClass.getResource("/hello.ir"))
+  val programFile = Source.fromURL(getClass.getResource("/case.ir"))
 
   val myLispProgram = programFile.getLines().mkString(" ")
 
@@ -174,7 +173,7 @@ object Main {
     val ast = handleAST(tree)
 
     println("AST =============================")
-    
+
     println(ast)
 
     println("END =============================")
@@ -188,16 +187,16 @@ object Main {
   }
 
 }
-
-
-object Main3 extends App {
-
-//  (DefDef main Nil (# (:: (ValDef args (TypeTree (Thicket Nil)) (Thicket Nil)) Nil)) (TypeTree (Thicket Nil)) (Apply (Ident println) (# (Literal (Constant "...............hello, )(((World!")))))))) (ValDef Enterprise (TypeTree (Thicket Nil)) (Apply (Select (New (TypeTree (Thicket Nil))) <init>) Nil)))
-
-  val tree = Apply( Select( New( TypeTree( Thicket( Nil))), TermName("<init>")), Nil)
-
-
-  println(tree)
-
-}
-
+//
+//
+//object Main3 extends App {
+//
+////  (DefDef main Nil (# (:: (ValDef args (TypeTree (Thicket Nil)) (Thicket Nil)) Nil)) (TypeTree (Thicket Nil)) (Apply (Ident println) (# (Literal (Constant "...............hello, )(((World!")))))))) (ValDef Enterprise (TypeTree (Thicket Nil)) (Apply (Select (New (TypeTree (Thicket Nil))) <init>) Nil)))
+//
+//  val tree = Apply( Select( New( TypeTree( Thicket( Nil))), TermName("<init>")), Nil)
+//
+//
+//  println(tree)
+//
+//}
+//
