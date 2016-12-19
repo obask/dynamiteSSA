@@ -1,6 +1,6 @@
 package hlvm
 
-import ast.{ASymbol, CodeTree, ABranch}
+import parser.{ABranch, ASymbol, CodeTree}
 
 sealed trait Type {
   def repr: String

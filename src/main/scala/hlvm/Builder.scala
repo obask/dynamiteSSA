@@ -1,6 +1,6 @@
 package hlvm
 
-import ast.{IRNode, CodeTree}
+import parser.IRNode
 
 import scala.collection.mutable
 

@@ -1,10 +1,12 @@
 
+import java.io.{StringReader, StringWriter}
+
 import ast.Trees._
 import ast._
+import clojure.java.api.Clojure
 import core.Types._
+import parser._
 
-import scala.collection.mutable
-import scala.collection.mutable.HashMap
 import scala.io.Source
 
 
@@ -26,12 +28,16 @@ object Main {
     println("handleType: " + tree)
 
     tree match {
-      case ABranch("TypeRef", params) =>
-        val tmp = TypeName(params(1).asInstanceOf[ASymbol].value)
-        createCaseClass(TypeRef, Seq(handleType(params.head), tmp))
+//      case ABranch("TypeRef", params) =>
+//        val tmp = TypeName(params(1).asInstanceOf[ASymbol].value)
+//        createCaseClass(TypeRef, Seq(handleType(params.head), tmp))
 
+      case ABranch("tn", params) =>
+        val nameOfType = params.head.asInstanceOf[ASymbol].value
+        TypeRef(null, TypeName(nameOfType))
       case ABranch("t", params) =>
-        handleDefault(tree).asInstanceOf[Type]
+        handleType(tree)
+//        handleDefault(tree).asInstanceOf[Type]
       case ABranch(cmd, params) =>
         val args = params.map(handleType)
         cmd match {
@@ -48,11 +54,7 @@ object Main {
     println(tree)
     tree match {
       case ABranch("t", params) =>
-        if (params.isEmpty) {
-          TypeName("")
-        } else {
-          TypeName(params.head.asInstanceOf[ASymbol].value)
-        }
+          TypeTree(TypeName(params.head.asInstanceOf[ASymbol].value))
       case _ => ???
     }
   }
@@ -60,6 +62,8 @@ object Main {
 
 
   def handleAST(tree: CodeTree): Any = {
+//    println("----")
+//    println("handleAST: " + tree.toString.take(20))
     tree match {
       case ASymbol("Nil") =>
         Nil
@@ -68,21 +72,26 @@ object Main {
       case ASymbol(info) =>
         println("TermName: " + info)
         TermName(info)
-      case ABranch("#", params) =>
+      case ABranch("%", params) =>
         params.map(handleAST)
-      case ABranch("TypeRef", params) =>
-        handleType(tree)
-      case ABranch("TypeTree", params) => TypeTree(handleType(params.head))
+      case ABranch("tn", List()) =>
+        TypeName("")
+      case ABranch("tn", List(ASymbol(ss))) =>
+        TypeName(ss)
+//      case ABranch("TypeRef", params) =>
+//        handleType(tree)
+      case ABranch("TypeTree", params) =>
+        TypeTree(handleType(params.head))
       case ABranch("Constant", params) =>
         params match {
           case Seq(ANumber(x)) => Constant(x)
+          case Seq(ADouble(x)) => Constant(x)
           case Seq(ASymbol("Unit")) => Constant(Unit)
           case ll: List[ASymbol] =>
             val tmp = ll.map(_.value).mkString(" ")
             Constant(tmp)
         }
       case ABranch(cmd, params) =>
-        println(cmd)
         val args = params.map(handleAST)
         cmd match {
           case "Ident" => createCaseClass(Ident, args)
@@ -132,17 +141,20 @@ object Main {
     }
   }
 
-  val programFile = Source.fromURL(getClass.getResource("/case.ir"))
+  val programFile = Source.fromURL(getClass.getResource("/result.sexpr"))
 
   val myLispProgram = programFile.getLines().mkString(" ")
 
 
   def createCaseClass[T, T1](o: T1, args: Seq[Any]): T = {
     println("createCaseClass: " + o.getClass.getName)
-    println("args " + args.length.toString + ": " + args)
+    println("args " + args.length.toString + ": " + args.map(_.toString.take(100)).mkString(" |#| "))
     val tmp = args map { _.asInstanceOf[AnyRef] }
 //    println(Ident.getClass.getMethods.toSeq.mkString("\n"))
-    o.getClass.getMethods.find(x => x.getName == "apply" && x.isBridge).get.invoke(o, tmp: _*).asInstanceOf[T]
+    o.getClass.getMethods
+      .find(x => x.getName == "apply" && x.isBridge)
+      .get.invoke(o, tmp: _*)
+      .asInstanceOf[T]
   }
 
 
@@ -155,26 +167,39 @@ object Main {
     }
   }
 
+
+
   def main(args: Array[String]) {
-
-//    val args = List(TermName("_"), theEmptyTree, theEmptyTree)
-//    val tmp = args map { _.asInstanceOf[AnyRef] }
-//    println(TypeRef.getClass.getMethods.toSeq.mkString("\n"))
-
-//    val res0 = ValDef.getClass.getMethods.find(x => x.getName == "apply" && x.isBridge)
-//    val res = res0.get.invoke(ValDef, tmp: _*).asInstanceOf[ValDef]
-//    println(res)
-//
-//    return
+    println("BEGIN =============================")
 
 
     val tokens = Parser.tokenize(myLispProgram)
+    println("makeFullAST =============================")
     val tree = Parser.makeFullAST(tokens.toList).head
+    println("handleAST =============================")
     val ast = handleAST(tree)
+
+    println("TMP =============================")
+
+    println(ast.toString.take(100))
 
     println("AST =============================")
 
-    println(ast)
+    val source = SExprPrinter.toSource(ast)
+    println(source)
+    println("PPrint =============================")
+
+//    val eval = Clojure.`var`("clojure.core", "eval")
+//    val result = eval.invoke(Clojure.read("(pprint {:a 1 :b 2} :stream nil)"))
+    val pw = new StringWriter()
+
+    Clojure.`var`("clojure.pprint", "pprint")
+    val result = clojure.lang.Compiler.load(new StringReader(
+      "(require 'clojure.pprint)" +
+      "(binding [clojure.pprint/*print-right-margin* 100]" +
+        "(with-out-str (clojure.pprint/pprint '" + source + ")))"
+    ))
+    println(result)
 
     println("END =============================")
 

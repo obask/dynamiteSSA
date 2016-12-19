@@ -1,4 +1,4 @@
-package ast
+package parser
 
 sealed abstract class CodeTree
 

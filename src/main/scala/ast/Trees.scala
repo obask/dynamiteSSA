@@ -20,6 +20,8 @@ case class TermName(s: String) extends Name {
   def isTypeName = false
   def isTermName = true
 
+  def isEmpty = s.isEmpty
+
   override def toString: String = s
 }
 
@@ -188,12 +190,12 @@ object Trees {
   }
 
   /** qual.this */
-  case class This private[ast](qual: Name)
+  case class This private[ast] (qual: Ident)
     extends DenotingTree with TermTree {
   }
 
   /** C.super[mix], where qual = C.this */
-  case class Super private[ast](qual: Tree, mix: TypeName)
+  case class Super private[ast](qual: Tree, mix: Ident)
     extends ProxyTree with TermTree {
 
     def forwardTo = qual
