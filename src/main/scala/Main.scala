@@ -157,18 +157,6 @@ object Main {
       .asInstanceOf[T]
   }
 
-
-  abstract case class Qwerty[T](a: Int, b: String) {
-    def ttt(x: Any) = {
-      x match {
-        case a: T => null
-        case _ => null
-      }
-    }
-  }
-
-
-
   def main(args: Array[String]) {
     println("BEGIN =============================")
 
@@ -181,12 +169,17 @@ object Main {
 
     println("TMP =============================")
 
-    println(ast.toString.take(100))
+
+//    ast.Printer
+
+
+    //    println(ast.toString.take(100))
 
     println("AST =============================")
 
     val source = SExprPrinter.toSource(ast)
     println(source)
+
     println("PPrint =============================")
 
 //    val eval = Clojure.`var`("clojure.core", "eval")
@@ -199,7 +192,8 @@ object Main {
       "(binding [clojure.pprint/*print-right-margin* 100]" +
         "(with-out-str (clojure.pprint/pprint '" + source + ")))"
     ))
-    println(result)
+
+    //    println(result)
 
     println("END =============================")
 
