@@ -3,7 +3,7 @@ import java.io.{StringReader, StringWriter}
 
 import clojure.java.api.Clojure
 import goast.{GoPrinter, GoReader}
-import parser._
+import sexpr._
 
 import scala.io.{BufferedSource, Source}
 

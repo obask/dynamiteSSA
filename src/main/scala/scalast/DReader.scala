@@ -4,7 +4,7 @@ import core.ADT
 import dotty.tools.dotc.ast.Trees
 import dotty.tools.dotc.ast.Trees._
 import dotty.tools.dotc.core.{Constants, Names}
-import parser._
+import sexpr._
 import core.CodeUtils.createCaseClass
 
 object DReader {

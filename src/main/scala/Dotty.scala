@@ -3,7 +3,7 @@ import java.io.{StringReader, StringWriter}
 import clojure.java.api.Clojure
 import dotty.tools.dotc.ast.Trees
 import dotty.tools.dotc.core.Contexts.{Context, ContextBase}
-import parser._
+import sexpr._
 
 import scala.io.Source
 import scalast.{DPrinter, DReader}

@@ -1,6 +1,6 @@
 package hlvm
 
-import parser.IRNode
+import sexpr.IRNode
 
 import scala.collection.mutable
 

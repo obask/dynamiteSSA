@@ -2,7 +2,7 @@ package goast
 
 import core.ADT
 import core.CodeUtils.createCaseClass
-import parser._
+import sexpr._
 
 object GoReader {
 
