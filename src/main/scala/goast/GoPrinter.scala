@@ -2,7 +2,7 @@ package goast
 
 import goast.Nodes.{BasicLit, Ident, NilNode}
 
-object Printer {
+object GoPrinter {
 
     def toSource(p: Any): String = {
       println(p.getClass.toString)

@@ -1,51 +1,29 @@
+package goast
 
-import java.io.{StringReader, StringWriter}
-
-import clojure.java.api.Clojure
-import core.Types._
-import goast.Nodes._
-import goast.{Nodes, Printer, Tokens}
+import core.ADT
+import core.CodeUtils.createCaseClass
 import parser._
 
-import scala.io.{BufferedSource, Source}
+object GoReader {
 
-
-object DelmeMain {
-
-
-// (DefDef
-//  <init>
-//    Nil
-//    (# Nil)
-//    (TypeTree (TypeRef (ThisType (TypeRef (NoPrefix) scala)) Unit))
-//    (Block
-//    (% (Apply (Select (Super (This Enterprise$) Nil) <init>) Nil))
-//    (Literal (Constant Unit))))
-
-
-
-  def handleType(tree: CodeTree): Type = {
+  def handleGoType(tree: CodeTree): ADT.TypeX = {
     println("handleType: " + tree)
 
     tree match {
-//      case ABranch("TypeRef", params) =>
-//        val tmp = TypeName(params(1).asInstanceOf[ASymbol].value)
-//        createCaseClass(TypeRef, Seq(handleType(params.head), tmp))
+      //      case ABranch("TypeRef", params) =>
+      //        val tmp = TypeName(params(1).asInstanceOf[ASymbol].value)
+      //        createCaseClass(TypeRef, Seq(handleType(params.head), tmp))
 
       case ABranch("t", params) =>
-        handleType(tree)
-//        handleDefault(tree).asInstanceOf[Type]
-      case ABranch(cmd, params) =>
-        val args = params.map(handleType)
-        cmd match {
-          case "NoPrefix" => NoPrefix
-          case "ThisType" => createCaseClass(ThisType, args)
-          case "JavaArrayType" => createCaseClass(JavaArrayType, args)
-        }
-      case _ => handleDefault(tree).asInstanceOf[Type]
+        handleGoType(tree)
+      //        handleDefault(tree).asInstanceOf[Type]
+//      case ABranch(cmd, params) =>
+//        val args = params.map(handleGoType)
+//        cmd match {
+//        }
+      case _ => handleDefault(tree).asInstanceOf[ADT.TypeX]
     }
   }
-
 
   def handleDefault(tree: CodeTree): Any = {
     println(tree)
@@ -54,11 +32,9 @@ object DelmeMain {
     }
   }
 
-
-
-  def handleAST(tree: CodeTree): Any = {
-//    println("----")
-//    println("handleAST: " + tree.toString.take(20))
+  def handleGoAST(tree: CodeTree): Any = {
+    //    println("----")
+    //    println("handleAST: " + tree.toString.take(20))
     tree match {
       case ASymbol("true") =>
         true
@@ -72,7 +48,7 @@ object DelmeMain {
         // unquote string
         Nodes.Ident(x.substring(1, x.length - 1))
       case ABranch("%", params) =>
-        params.map(handleAST)
+        params.map(handleGoAST)
       case ABranch("const", params) =>
         params match {
           case Seq(ANumber(x)) => Nodes.BasicLit(Tokens.INT, x.toString)
@@ -82,7 +58,7 @@ object DelmeMain {
             Nodes.BasicLit(Tokens.STRING, tmp)
         }
       case ABranch(cmd, params) =>
-        val args = params.map(handleAST)
+        val args = params.map(handleGoAST)
         cmd match {
           case "BinaryExpr" => createCaseClass(Nodes.BinaryExpr, args)
           case "BadStmt" => createCaseClass(Nodes.BadStmt, args)
@@ -147,81 +123,5 @@ object DelmeMain {
     }
   }
 
-  val programFile: BufferedSource = Source.fromURL(getClass.getResource("/code.clj"))
-
-  val myLispProgram: String = programFile.getLines().mkString(" ")
-
-  def createCaseClass[T, T1](o: T1, args: Seq[Any]): T = {
-    println("createCaseClass: " + o.getClass.getName)
-    println("args " + args.length.toString + ": " + args.map(_.toString.take(100)).mkString(" |#| "))
-    val tmp = args map { _.asInstanceOf[AnyRef] }
-//    println(Ident.getClass.getMethods.toSeq.mkString("\n"))
-    o.getClass.getMethods
-      .find(x => x.getName == "apply" && x.isBridge)
-      .get.invoke(o, tmp: _*)
-      .asInstanceOf[T]
-  }
-
-
-  def main(args: Array[String]) {
-    println("BEGIN =============================")
-
-//    val q1 = List(Ident("Pos"))
-//    val q2 = FuncType(FieldList(List()),FieldList(List()))
-//    val q3 = Nodes.NilNode
-//    val res = Nodes.Field(q1,q2,q3)
-//    println(res)
-//    return
-
-    val tokens = Parser.tokenize(myLispProgram)
-    println("makeFullAST =============================")
-    val tree = Parser.makeFullAST(tokens.toList).head
-    println("handleAST =============================")
-    val ast = handleAST(tree)
-
-    println("TMP =============================")
-
-    println(ast.toString.take(100))
-
-    println("AST =============================")
-
-    val source = Printer.toSource(ast)
-    println(source)
-    println("PPrint =============================")
-
-//    val eval = Clojure.`var`("clojure.core", "eval")
-//    val result = eval.invoke(Clojure.read("(pprint {:a 1 :b 2} :stream nil)"))
-    val pw = new StringWriter()
-
-    Clojure.`var`("clojure.pprint", "pprint")
-    val result = clojure.lang.Compiler.load(new StringReader(
-      "(require 'clojure.pprint)" +
-      "(binding [clojure.pprint/*print-right-margin* 100]" +
-        "(with-out-str (clojure.pprint/pprint '" + source + ")))"
-    ))
-    println(result)
-
-    println("END =============================")
-
-    //    IRNode.TheModule.getFunction("main1").dump()
-//    println(IRNode.TheModule.getFunction("main1").codegen.mkString("\n"))
-
-
-//    println(IRNode.TheModule.functions.keys)
-
-  }
 
 }
-//
-//
-//object Main3 extends App {
-//
-////  (DefDef main Nil (# (:: (ValDef args (TypeTree (Thicket Nil)) (Thicket Nil)) Nil)) (TypeTree (Thicket Nil)) (Apply (Ident println) (# (Literal (Constant "...............hello, )(((World!")))))))) (ValDef Enterprise (TypeTree (Thicket Nil)) (Apply (Select (New (TypeTree (Thicket Nil))) <init>) Nil)))
-//
-//  val tree = Apply( Select( New( TypeTree( Thicket( Nil))), TermName("<init>")), Nil)
-//
-//
-//  println(tree)
-//
-//}
-//
