@@ -56,15 +56,6 @@ object Golang {
 
 //    val eval = Clojure.`var`("clojure.core", "eval")
 //    val result = eval.invoke(Clojure.read("(pprint {:a 1 :b 2} :stream nil)"))
-    val pw = new StringWriter()
-
-    Clojure.`var`("clojure.pprint", "pprint")
-    val result = clojure.lang.Compiler.load(new StringReader(
-      "(require 'clojure.pprint)" +
-      "(binding [clojure.pprint/*print-right-margin* 100]" +
-        "(with-out-str (clojure.pprint/pprint '" + source + ")))"
-    ))
-    println(result)
 
     println("END =============================")
 

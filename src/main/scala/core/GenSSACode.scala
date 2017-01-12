@@ -32,7 +32,6 @@ class GenSSACode extends Phase {
     val printer = new RefinedPrinter(ctx)
     println(printer.toText(tree).mkString(width = 100))
 
-    println("----------------")
 
     def toSource(p: Any): String = {
       p match {
@@ -44,6 +43,7 @@ class GenSSACode extends Phase {
         case List() => "Nil"
         case ll: List[_] => ll.map(toSource).mkString("[% ", " ", "]")
         case tpd.EmptyTree => "EmptyTree"
+        case x: Trees.EmptyValDef[_] => "EmptyValDef"
         // TODO recover full path to types
         case t: TypeRef =>
           toSource(t.name)
@@ -60,26 +60,19 @@ class GenSSACode extends Phase {
           }
           else
             "(TypeTreeX " + toSource(t.tpe) + ")"
+
         case p: Product => p.productIterator.map(toSource).mkString("(" + p.productPrefix + " ", " ", ")")
         case _ => p.toString
       }
     }
 
-    println(toSource(tree))
+    val source = toSource(tree)
+//    println(source)
 
+
+    println("---- CLOJURE PRETTY PRINT ----")
+    sexpr.PPrint.dump(source)
     println("----------------")
-
-    //    println("AST:")
-//    tree match {
-//      case xx: PackageDef =>
-//        printer.printListField("AST", xx.stats)
-//    }
-
-//    println(tree)
-//    println("----------------")
-
-    //    Lispyfy.processPackageDef(tree.asInstanceOf[PackageDef])
-
 
     entryPoints.clear()
   }

@@ -1,0 +1,215 @@
+(PackageDef
+ (Ident examples)
+ [%
+  (TypeDef
+   (tn Enterprise$)
+   (Template
+    (DefDef
+     <init>
+     Nil
+     [% Nil]
+     (t Unit)
+     (Block
+      [%
+       (Apply
+        (Select
+         (Super (This (Ident (tn Enterprise$))) (Ident (tn)))
+         <init>)
+        Nil)]
+      (Literal (Constant Unit))))
+    [% (t Object)]
+    (ValDef _ (t EmptyTree) EmptyTree)
+    [%
+     (ValDef Fmt (t Fmt$) (Apply (Select (New (t Fmt$)) <init>) Nil))
+     (DefDef
+      mesure
+      Nil
+      [% [% (ValDef g (t Geometry) EmptyTree)]]
+      (t Unit)
+      (Block
+       [%
+        (Apply (Select (Ident Fmt) Println) [% (Ident g)])
+        (Apply
+         (Select (Ident Fmt) Println)
+         [%
+          (Apply
+           (Ident box)
+           [% (Apply (Select (Ident g) area) Nil)])])]
+       (Apply
+        (Select (Ident Fmt) Println)
+        [%
+         (Apply
+          (Ident box)
+          [% (Apply (Select (Ident g) perim) Nil)])])))
+     (DefDef
+      main
+      Nil
+      [%
+       [%
+        (ValDef
+         args
+         (TypeTree (JavaArrayType (tn String)))
+         EmptyTree)]]
+      (t Unit)
+      (Apply
+       (Ident println)
+       [% (Literal (Constant "Hello World"))]))]))
+  (TypeDef
+   (tn Rect)
+   (Template
+    (DefDef
+     <init>
+     Nil
+     [%
+      [%
+       (ValDef width (t Double) EmptyTree)
+       (ValDef height (t Double) EmptyTree)]]
+     (t Unit)
+     (Block
+      [%
+       (Assign
+        (Select (This (Ident (tn Rect))) width$$local)
+        (Ident width))
+       (Assign
+        (Select (This (Ident (tn Rect))) height$$local)
+        (Ident height))
+       (Apply
+        (Select (Super (This (Ident (tn Rect))) (Ident (tn))) <init>)
+        Nil)]
+      (Literal (Constant Unit))))
+    [% (t Object) (t Geometry)]
+    (ValDef _ (t EmptyTree) EmptyTree)
+    [%
+     (ValDef width$$local (t Double) EmptyTree)
+     (DefDef
+      width
+      Nil
+      [% Nil]
+      (t Double)
+      (Select (This (Ident (tn Rect))) width$$local))
+     (ValDef height$$local (t Double) EmptyTree)
+     (DefDef
+      height
+      Nil
+      [% Nil]
+      (t Double)
+      (Select (This (Ident (tn Rect))) height$$local))
+     (DefDef
+      area
+      Nil
+      [% Nil]
+      (t Double)
+      (Apply
+       (Select (Apply (Ident width) Nil) $times)
+       [% (Apply (Ident height) Nil)]))
+     (DefDef
+      perim
+      Nil
+      [% Nil]
+      (t Double)
+      (Apply
+       (Select
+        (Apply
+         (Select (This (Ident (tn Rect))) mult)
+         [% (Apply (Ident width) Nil)])
+        $plus)
+       [%
+        (Apply
+         (Select (Literal (Constant 2)) $times)
+         [% (Apply (Ident height) Nil)])]))
+     (DefDef
+      mult
+      Nil
+      [% [% (ValDef b (t Double) EmptyTree)]]
+      (t Double)
+      (Apply (Select (Literal (Constant 2)) $times) [% (Ident b)]))]))
+  (TypeDef
+   (tn Geometry)
+   (Template
+    (DefDef <init> Nil [% Nil] (t Unit) (Literal (Constant Unit)))
+    [% (t Object)]
+    (ValDef _ (t EmptyTree) EmptyTree)
+    [%
+     (DefDef area Nil [% Nil] (t Double) EmptyTree)
+     (DefDef perim Nil [% Nil] (t Double) EmptyTree)]))
+  (TypeDef
+   (tn Fmt$)
+   (Template
+    (DefDef
+     <init>
+     Nil
+     [% Nil]
+     (t Unit)
+     (Block
+      [%
+       (Apply
+        (Select (Super (This (Ident (tn Fmt$))) (Ident (tn))) <init>)
+        Nil)
+       (Assign (Ident Pi$$local) (Literal (Constant 3.14)))]
+      (Literal (Constant Unit))))
+    [% (t Object)]
+    (ValDef _ (t EmptyTree) EmptyTree)
+    [%
+     (DefDef
+      Println
+      Nil
+      [% [% (ValDef x (t Object) EmptyTree)]]
+      (t Unit)
+      (Apply (Ident println) [% (Ident x)]))
+     (ValDef Pi$$local (t Double) EmptyTree)
+     (DefDef Pi Nil [% Nil] (t Double) (Ident Pi$$local))]))
+  (TypeDef
+   (tn Circle)
+   (Template
+    (DefDef
+     <init>
+     Nil
+     [% [% (ValDef radius (t Double) EmptyTree)]]
+     (t Unit)
+     (Block
+      [%
+       (Assign
+        (Select (This (Ident (tn Circle))) radius$$local)
+        (Ident radius))
+       (Apply
+        (Select (Super (This (Ident (tn Circle))) (Ident (tn))) <init>)
+        Nil)]
+      (Literal (Constant Unit))))
+    [% (t Object) (t Geometry)]
+    (ValDef _ (t EmptyTree) EmptyTree)
+    [%
+     (ValDef radius$$local (t Double) EmptyTree)
+     (DefDef
+      radius
+      Nil
+      [% Nil]
+      (t Double)
+      (Select (This (Ident (tn Circle))) radius$$local))
+     (DefDef
+      area
+      Nil
+      [% Nil]
+      (t Double)
+      (Apply
+       (Select
+        (Apply
+         (Select (Apply (Select (Ident Fmt) Pi) Nil) $times)
+         [% (Apply (Ident radius) Nil)])
+        $times)
+       [% (Apply (Ident radius) Nil)]))
+     (DefDef
+      perim
+      Nil
+      [% Nil]
+      (t Double)
+      (Apply
+       (Select
+        (Apply
+         (Select (Literal (Constant 2)) $times)
+         [% (Apply (Select (Ident Fmt) Pi) Nil)])
+        $times)
+       [% (Apply (Ident radius) Nil)]))]))
+  (ValDef
+   Enterprise
+   (t Enterprise$)
+   (Apply (Select (New (t Enterprise$)) <init>) Nil))])

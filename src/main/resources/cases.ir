@@ -1,0 +1,47 @@
+(PackageDef
+ (Ident <empty>)
+ [%
+  (TypeDef
+   (tn Enterprise$)
+   (Template
+    (DefDef
+     <init>
+     Nil
+     [% Nil]
+     (t Unit)
+     (Block
+      [% (Apply (Select (Super (This (Ident (tn Enterprise$))) (Ident (tn))) <init>) Nil)]
+      (Literal (Constant Unit))))
+    [% (t Object)]
+    EmptyValDef
+    [%
+     (DefDef
+      fib
+      Nil
+      [% [% (ValDef x (t Int) EmptyTree)]]
+      (t Function1)
+      (Closure [% (Ident x)] (Ident $anonfun$fib$1) (t JFunction1$mcII$sp)))
+     (DefDef
+      main
+      Nil
+      [% [% (ValDef args (TypeTree (JavaArrayType (tn String))) EmptyTree)]]
+      (t Unit)
+      (Block
+       [% (ValDef tmp (t Function1) (Apply (Ident fib) [% (Literal (Constant 2))]))]
+       (Apply
+        (Ident println)
+        [%
+         (Apply
+          (Select (Literal (Constant "Hello World")) $plus)
+          [%
+           (Apply
+            (Select (Ident tmp) apply)
+            [% (Apply (Ident box) [% (Literal (Constant 5))])])])])))
+     (DefDef
+      $anonfun$fib$1
+      Nil
+      [% [% (ValDef x$1 (t Int) EmptyTree) (ValDef z (t Int) EmptyTree)]]
+      (t Int)
+      (Apply (Select (Ident z) $plus) [% (Ident x$1)]))
+      ]))
+  (ValDef Enterprise (t Enterprise$) (Apply (Select (New (t Enterprise$)) <init>) Nil))])

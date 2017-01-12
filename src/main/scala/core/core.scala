@@ -1,10 +1,14 @@
-package core
+import dotty.tools.dotc.core.Names
+import dotty.tools.dotc.core.Names.TermName
 
-object CodeUtils {
+package object core {
+
+  val THIS_PARAMETER_NAME: TermName = Names.termName("this")
+
 
   def createCaseClass[T, T1](o: T1, args: Seq[Any]): T = {
-    println("createCaseClass: " + o.getClass.getName)
-    println("args " + args.length.toString + ": " + args.map(_.toString.take(100)).mkString(" |#| "))
+    //    println("createCaseClass: " + o.getClass.getName)
+    //    println("args " + args.length.toString + ": " + args.map(_.toString.take(100)).mkString(" |#| "))
 
     val tmp = args map { _.asInstanceOf[AnyRef] }
     //    println(o.getClass.getMethods.toSeq.mkString("\n"))

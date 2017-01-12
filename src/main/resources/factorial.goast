@@ -1,0 +1,67 @@
+(FuncDecl
+        nil
+        "fact"
+        (FuncType
+          (FieldList
+            [% (Field
+                  [% "n"
+                      ]
+                  "int"
+                  nil
+                  )
+                ]
+            )
+          (FieldList
+            [% (Field
+                  [% ]
+                  "int"
+                  nil
+                  )
+                ]
+            )
+          )
+        (BlockStmt
+          [% (AssignStmt
+                [% "n1"
+                    ]
+                ":="
+                [% (BinaryExpr
+                      "n"
+                      "-"
+                      (const 1)
+                      )
+                    ]
+                )
+              (IfStmt
+                nil
+                (BinaryExpr
+                  "n"
+                  "<"
+                  (const 2)
+                  )
+                (BlockStmt
+                  [% (ReturnStmt
+                        [% (const 1)
+                            ]
+                        )
+                      ]
+                  )
+                (BlockStmt
+                  [% (ReturnStmt
+                        [% (BinaryExpr
+                              "n"
+                              "*"
+                              (CallExpr
+                                "fact"
+                                [% "n1"
+                                    ]
+                                )
+                              )
+                            ]
+                        )
+                      ]
+                  )
+                )
+              ]
+          )
+        )

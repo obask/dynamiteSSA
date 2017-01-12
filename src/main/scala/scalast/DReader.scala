@@ -5,7 +5,7 @@ import dotty.tools.dotc.ast.Trees
 import dotty.tools.dotc.ast.Trees._
 import dotty.tools.dotc.core.{Constants, Names}
 import sexpr._
-import core.CodeUtils.createCaseClass
+import core.createCaseClass
 
 object DReader {
 
@@ -17,8 +17,10 @@ object DReader {
         Nil
       case ASymbol("EmptyTree") =>
         Trees.theEmptyTree
+      case ASymbol("EmptyValDef") =>
+        new Trees.EmptyValDef[Trees.Untyped]
       case ASymbol(info) =>
-        println("TermName: " + info)
+//        println("TermName: " + info)
         Names.termName(info)
       case ABranch("%", params) =>
         params.map(handleDottyAST)
@@ -34,10 +36,10 @@ object DReader {
         params match {
           case Seq(ANumber(x)) => Constants.Constant(x)
           case Seq(ADouble(x)) => Constants.Constant(x)
-          case Seq(ASymbol("Unit")) => Constants.Constant(Constants.UnitTag)
+          case Seq(ASymbol("Unit")) => Constants.Constant(())
           case ll: List[ASymbol] =>
             val tmp = ll.map(_.value).mkString(" ")
-            Constants.Constant(tmp)
+            Constants.Constant(tmp.substring(1, tmp.length - 1))
         }
       case ABranch(cmd, params) =>
         val args = params.map(handleDottyAST)
@@ -117,10 +119,10 @@ object DReader {
   }
 
   private def handleDefault(tree: CodeTree): Any = {
-    println(tree)
+//    println(tree)
     tree match {
       case ABranch("t", params) =>
-        println("PROCESS TT: " + params)
+//        println("PROCESS TT: " + params)
         val value = params.head.asInstanceOf[ASymbol].value
         //        Types.TypeRef(Types.NoPrefix, Names.typeName(value))
         ADT.TypeTreeX(ADT.TypeNameX(value))

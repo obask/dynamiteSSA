@@ -9,4 +9,6 @@ scalaVersion := "2.11.8"
 libraryDependencies += "org.clojure" % "clojure" % "1.8.0"
 
 // https://mvnrepository.com/artifact/ch.epfl.lamp/dotty-compiler_2.11
-libraryDependencies += "ch.epfl.lamp" % "dotty-compiler_2.11" % "0.1-20161222-1197257-NIGHTLY"
+libraryDependencies += "ch.epfl.lamp" % "dotty-compiler_2.11" % "0.1.1-20170109-be64643-NIGHTLY"
+
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"

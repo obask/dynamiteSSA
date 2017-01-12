@@ -6,7 +6,15 @@ import dotty.tools.dotc.core.Types
 
 object ADT {
 
-  case class TypeTreeX[-T >: Untyped](value: TypeX) extends Trees.Tree
+  case class TypeTreeX[-T >: Untyped](value: TypeX) extends Trees.Tree {
+    override def toString: String = {
+      value match {
+        case TypeNameX(ss) => ss
+        case _ =>
+          "(t " + value.toString + ")"
+      }
+    }
+  }
 
   trait TypeX extends Types.Type {
     override def hash: Int = ???
