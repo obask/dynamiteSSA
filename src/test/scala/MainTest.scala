@@ -2,7 +2,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class MainTest extends FlatSpec with Matchers {
 
-  "A Stack" should "pop values in last-in-first-out order" in {
+  it should "pop values in last-in-first-out order" in {
     Main.plusOne(2) should be (3)
   }
 

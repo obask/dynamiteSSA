@@ -11,7 +11,7 @@ object Parser {
   case class LAtom(value: String) extends LToken
 
 
-  def toSomeInt(ss: String):Option[Int] = {
+  def toSomeInt(ss: String): Option[Int] = {
     try {
       Some(ss.toInt)
     } catch {
@@ -19,7 +19,7 @@ object Parser {
     }
   }
 
-  def toSomeDouble(ss: String):Option[Double] = {
+  def toSomeDouble(ss: String): Option[Double] = {
     try {
       Some(ss.toDouble)
     } catch {
@@ -28,7 +28,7 @@ object Parser {
   }
 
 
-  def tokenize(ss0: String): Array[LToken] = {
+  def tokenize(ss0: String): Seq[LToken] = {
     val ss1 = ss0.replace("(", " ( ").replace(")", " ) ")
     val ss2 = ss1.replace("[", " [ ").replace("]", " ] ")
     val tokens = Array(ss2) flatMap (_ split " ") flatMap (_ split "\n") flatMap (_ split "\t") filter (!_.isEmpty)
@@ -45,23 +45,23 @@ object Parser {
   }
 
 
-  def makeFullAST(tokens: List[LToken]): List[CodeTree] = {
-    val (branch, rest) = makeAST(tokens, List())
+  def makeFullAST(tokens: Seq[LToken]): Seq[CodeTree] = {
+    val (branch, rest) = makeAST(tokens.toList, List())
     branch.params
   }
 
 
-  def makeAST(tokens: List[LToken], state: List[CodeTree]): (ABranch, List[LToken]) = {
+  def makeAST(tokens: Seq[LToken], state: Seq[CodeTree]): (ABranch, Seq[LToken]) = {
     if (tokens.isEmpty) {
       (ABranch("result", state.reverse), tokens)
     } else {
       tokens.head match {
         case LeftParenthesis =>
-          val tt = makeAST(tokens.tail, List())
-          makeAST(tt._2, tt._1 :: state)
-        case LInt(x) => makeAST(tokens.tail, ANumber(x) :: state)
-        case LDouble(x) => makeAST(tokens.tail, ADouble(x) :: state)
-        case LAtom(x) => makeAST(tokens.tail, ASymbol(x) :: state)
+          val tt = makeAST(tokens.tail, Seq())
+          makeAST(tt._2, tt._1 +: state)
+        case LInt(x) => makeAST(tokens.tail, ANumber(x) +: state)
+        case LDouble(x) => makeAST(tokens.tail, ADouble(x) +: state)
+        case LAtom(x) => makeAST(tokens.tail, ASymbol(x) +: state)
         case RightParenthesis =>
           val params = state.reverse
 //          println(params)

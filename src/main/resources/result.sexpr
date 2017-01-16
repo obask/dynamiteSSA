@@ -1,0 +1,25 @@
+(CallExpr
+                      (FuncLit
+                        (FuncType
+                          (FieldList
+                            [% ]
+                            )
+                          (FieldList
+                            [% (Field
+                                  [% ]
+                                  "int"
+                                  nil
+                                  )
+                                ]
+                            )
+                          )
+                        (BlockStmt
+                          [% (ReturnStmt
+                                [% (const 2)
+                                    ]
+                                )
+                              ]
+                          )
+                        )
+                      [% ]
+                      )

@@ -4,21 +4,39 @@ import goast.Nodes.{BasicLit, Ident, NilNode}
 
 object GoPrinter {
 
-    def toSource(p: Any): String = {
+  def toSourceExpr(p: Nodes.Expr): String = {
+    toSource(p)
+  }
+
+    def toSource(p: Nodes.Node): String = {
       println(p.getClass.toString)
       p match {
-        case s: String => ???
-        //          "\"" + s + "\""
-        case Tokens.Wrapper(w) => w
-        case NilNode => "nil"
-        case Ident(n) => '"' + n.toString + '"'
-        case c: BasicLit => "(const " + c.value + ")"
-        case ll: List[_] => ll.map(toSource).mkString("[% ", " ", "]")
-        case p: Product => p.productIterator
-          .map(toSource)
-          .mkString("(" + p.productPrefix + " ", " ", ")")
-        case _ => p.toString
+        case Nodes.NilNode => "nil"
+        case Nodes.Ident(n) => '"' + n.toString + '"'
+        case c: Nodes.BasicLit => "(const " + c.value + ")"
+        case _ => toSourceX(p)
       }
     }
+
+  private def toSourceX(p: Any): String = {
+    if (p != null) {
+      println(p.getClass.toString)
+    }
+    p match {
+      case null => "nil"
+      case s: String => ???
+      case Tokens.Wrapper(w) => "\"" + w + "\""
+      case ll: List[_] => ll
+        .map {case x: Nodes.Node => toSource(x)
+              case x => toSourceX(x)
+        }.mkString("[% ", " ", "]")
+      case p: Product => p.productIterator
+        .map {case x: Nodes.Node => toSource(x)
+              case x => toSourceX(x)
+        }
+        .mkString("(" + p.productPrefix + " ", " ", ")")
+      case _ => p.toString
+    }
+  }
 
 }

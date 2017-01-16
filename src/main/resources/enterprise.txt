@@ -1,0 +1,44 @@
+package <empty> {
+  <trait> interface trait Geometry extends Object {
+    def <init>(): Unit = ()
+    def area(): Double
+    def perim(): Double
+  }
+  @scala.annotation.internal.SourceFile(
+    "/Users/baskakov/IdeaProjects/dynamiteSSA/src/main/resources/Enterprise.scala"
+  ) final module class Enterprise$ extends Object {
+    def <init>(): Unit =
+      {
+        super()
+        ()
+      }
+    def mult(that: Enterprise.Rect, b: Double): Double = that.two().*(b)
+    def mesure(g: Enterprise.Geometry): Unit =
+      {
+        assets.Fmt.Println(g)
+        assets.Fmt.Println(scala.Double.box(g.area()))
+        assets.Fmt.Println(scala.Double.box(g.perim()))
+      }
+    def main(args: String[]): Unit = println("Hello World")
+  }
+  class Rect extends Object with Enterprise.Geometry {
+    def <init>(width: Double, height: Double): Unit =
+      {
+        this.width$$local = width
+        this.height$$local = height
+        super()
+        this.two$$local = 2
+        ()
+      }
+    private val width$$local: Double
+    <accessor> def width(): Double = this.width$$local
+    private val height$$local: Double
+    <accessor> def height(): Double = this.height$$local
+    private val two$$local: Int
+    <accessor> def two(): Int = this.two$$local
+    def area(): Double = Rect.this.width().*(this.height())
+    def perim(): Double = this.mult(Rect.this.width()).+(2.*(Rect.this.height()))
+    def mult(b: Double): Double = Enterprise.mult(this, b)
+  }
+  final lazy module val Enterprise: Enterprise$ = new Enterprise$()
+}

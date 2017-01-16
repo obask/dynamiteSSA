@@ -2,7 +2,7 @@ package sexpr
 
 sealed abstract class CodeTree
 
-case class ABranch(cmd: String, params: List[CodeTree]) extends CodeTree {
+case class ABranch(cmd: String, params: Seq[CodeTree]) extends CodeTree {
   override def toString = {
     "(" + cmd + " " + (params map {_.toString} mkString " ") + ")"
   }

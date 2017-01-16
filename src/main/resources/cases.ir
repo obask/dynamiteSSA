@@ -16,32 +16,157 @@
     EmptyValDef
     [%
      (DefDef
-      fib
+      loadVector
       Nil
-      [% [% (ValDef x (t Int) EmptyTree)]]
-      (t Function1)
-      (Closure [% (Ident x)] (Ident $anonfun$fib$1) (t JFunction1$mcII$sp)))
+      [% [% (ValDef path (t String) EmptyTree)]]
+      (t HashMap)
+      (Block
+       [%
+        (ValDef res (t HashMap) (Apply (Select (New (t HashMap)) <init>) Nil))
+        (Apply
+         (Select
+          (Apply
+           (Select
+            (Apply
+             (Select
+              (Apply
+               (Select
+                (Apply
+                 (Select (Ident Source) fromFile)
+                 [% (Ident path) (Apply (Ident fallbackSystemCodec) Nil)])
+                getLines)
+               Nil)
+              zipWithIndex)
+             Nil)
+            withFilter)
+           [% (Closure Nil (Ident $anonfun$loadVector$2) EmptyTree)])
+          foreach)
+         [% (Closure [% (Ident res)] (Ident $anonfun$loadVector$1) EmptyTree)])]
+       (Ident res)))
      (DefDef
       main
       Nil
       [% [% (ValDef args (TypeTree (JavaArrayType (tn String))) EmptyTree)]]
       (t Unit)
-      (Block
-       [% (ValDef tmp (t Function1) (Apply (Ident fib) [% (Literal (Constant 2))]))]
-       (Apply
-        (Ident println)
-        [%
-         (Apply
-          (Select (Literal (Constant "Hello World")) $plus)
-          [%
-           (Apply
-            (Select (Ident tmp) apply)
-            [% (Apply (Ident box) [% (Literal (Constant 5))])])])])))
+      (Apply (Ident println) [% (Literal (Constant "Hello World"))]))
      (DefDef
-      $anonfun$fib$1
+      $anonfun$loadVector$2
       Nil
-      [% [% (ValDef x$1 (t Int) EmptyTree) (ValDef z (t Int) EmptyTree)]]
-      (t Int)
-      (Apply (Select (Ident z) $plus) [% (Ident x$1)]))
-      ]))
+      [% [% (ValDef x$1 (t Tuple2) EmptyTree)]]
+      (t Boolean)
+      (Block
+       [% (ValDef selector11 (t Tuple2) (Typed (Ident x$1) (t Tuple2)))]
+       (Block
+        [%
+         (DefDef
+          case11
+          Nil
+          [% Nil]
+          (t Boolean)
+          (Block
+           [%
+            (ValDef o31 (t Option) (Apply (Select (Ident Tuple2) unapply) [% (Ident selector11)]))]
+           (If
+            (Apply (Select (Apply (Select (Ident o31) isEmpty) Nil) unary_$bang) Nil)
+            (Block
+             [%
+              (ValDef
+               x21
+               (t Tuple2)
+               (TypeApply
+                (Select (Apply (Select (Ident o31) get) Nil) asInstanceOf)
+                [% (t Tuple2)]))]
+             (Literal (Constant true)))
+            (Block
+             [% (DefDef case21 Nil [% Nil] (t Boolean) (Literal (Constant false)))]
+             (Apply (Ident case21) Nil)))))]
+        (Apply (Ident case11) Nil))))
+     (DefDef
+      $anonfun$loadVector$1
+      Nil
+      [% [% (ValDef res$1 (t HashMap) EmptyTree) (ValDef x$1 (t Tuple2) EmptyTree)]]
+      (t Unit)
+      (Block
+       [% (ValDef selector12 (t Tuple2) (Ident x$1))]
+       (Block
+        [%
+         (DefDef
+          case31
+          Nil
+          [% Nil]
+          (t Unit)
+          (Block
+           [%
+            (ValDef o32 (t Option) (Apply (Select (Ident Tuple2) unapply) [% (Ident selector12)]))]
+           (If
+            (Apply (Select (Apply (Select (Ident o32) isEmpty) Nil) unary_$bang) Nil)
+            (Block
+             [%
+              (ValDef
+               x22
+               (t Tuple2)
+               (TypeApply
+                (Select (Apply (Select (Ident o32) get) Nil) asInstanceOf)
+                [% (t Tuple2)]))]
+             (Block
+              [%
+               (ValDef
+                line
+                (t String)
+                (TypeApply
+                 (Select (Apply (Select (Ident x22) _1) Nil) asInstanceOf)
+                 [% (t String)]))]
+              (Block
+               [%
+                (ValDef
+                 ll
+                 (t List)
+                 (Apply
+                  (Select
+                   (Apply
+                    (Ident refArrayOps)
+                    [%
+                     (Apply
+                      (Select
+                       (Apply
+                        (Select (New (t StringOps)) <init>)
+                        [% (Apply (Ident augmentString) [% (Ident line)])])
+                       split)
+                      [% (Literal (Constant))])])
+                   toList)
+                  Nil))]
+               (Apply
+                (Select (Ident res$1) update)
+                [%
+                 (Apply (Select (Ident ll) apply) [% (Literal (Constant 0))])
+                 (Apply
+                  (Ident box)
+                  [%
+                   (Apply
+                    (Select
+                     (Apply
+                      (Select (New (t StringOps)) <init>)
+                      [%
+                       (Apply
+                        (Ident augmentString)
+                        [%
+                         (TypeApply
+                          (Select
+                           (Apply (Select (Ident ll) apply) [% (Literal (Constant 1))])
+                           asInstanceOf)
+                          [% (t String)])])])
+                     toDouble)
+                    Nil)])]))))
+            (Block
+             [%
+              (DefDef
+               matchFail21
+               Nil
+               [% Nil]
+               (t Unit)
+               (Apply
+                (Ident throw)
+                [% (Apply (Select (New (t MatchError)) <init>) [% (Ident selector12)])]))]
+             (Apply (Ident matchFail21) Nil)))))]
+        (Apply (Ident case31) Nil))))]))
   (ValDef Enterprise (t Enterprise$) (Apply (Select (New (t Enterprise$)) <init>) Nil))])

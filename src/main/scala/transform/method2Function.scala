@@ -13,7 +13,6 @@ object method2Function {
   // if file is an object
   def apply(input: untpd.Tree): untpd.Tree = {
     val tree = input.asInstanceOf[untpd.PackageDef]
-    val moduleName = getModuleObjectName(tree)
     val moduleType = getModuleObjectType(tree)
     // extract code of all functions
     var result = List[untpd.DefDef]()

@@ -1,7 +1,8 @@
 package core
 
-import dotty.tools.dotc.ast.{Trees, tpd}
+import dotty.tools.dotc.ast.{Trees, tpd, untpd}
 import dotty.tools.dotc.core.Contexts._
+import dotty.tools.dotc.core.Names
 import dotty.tools.dotc.core.Names.{TermName, TypeName}
 import dotty.tools.dotc.core.Phases.Phase
 import dotty.tools.dotc.core.Symbols._
@@ -39,15 +40,15 @@ class GenSSACode extends Phase {
         case () => "Unit"
         case n: TermName if n.isEmpty => "(TermName )"
         case n: TypeName => "(tn " + n.toString + ")"
-
-        case List() => "Nil"
-        case ll: List[_] => ll.map(toSource).mkString("[% ", " ", "]")
         case tpd.EmptyTree => "EmptyTree"
         case x: Trees.EmptyValDef[_] => "EmptyValDef"
         // TODO recover full path to types
+        case x: untpd.If => {
+          "(Typed " + toDefaultSource(x) + " " + toSource(x.tpe) + ")"
+        }
         case t: TypeRef =>
           toSource(t.name)
-        case t: Trees.TypeTree[_] =>
+        case t: untpd.TypeTree =>
 //          val tmp = if (t.hasType) toSource(t.typeOpt) else toSource(t.tpe)
 //          "(TypeTree " + tmp + ")"
 //          TODO set different tags for hasType and reference
@@ -61,12 +62,20 @@ class GenSSACode extends Phase {
           else
             "(TypeTreeX " + toSource(t.tpe) + ")"
 
+        case _ => toDefaultSource(p)
+      }
+    }
+
+    def toDefaultSource(p: Any): String = {
+      p match {
+        case List() => "Nil"
+        case ll: List[_] => ll.map(toSource).mkString("[% ", " ", "]")
         case p: Product => p.productIterator.map(toSource).mkString("(" + p.productPrefix + " ", " ", ")")
         case _ => p.toString
       }
     }
 
-    val source = toSource(tree)
+      val source = toSource(tree)
 //    println(source)
 
 

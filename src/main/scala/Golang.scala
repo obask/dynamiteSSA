@@ -2,7 +2,7 @@
 import java.io.{StringReader, StringWriter}
 
 import clojure.java.api.Clojure
-import goast.{GoPrinter, GoReader}
+import goast.{GoPrinter, GoReader, Nodes}
 import sexpr._
 
 import scala.io.{BufferedSource, Source}
@@ -50,7 +50,7 @@ object Golang {
 
     println("AST =============================")
 
-    val source = GoPrinter.toSource(ast)
+    val source = GoPrinter.toSource(ast.asInstanceOf[Nodes.Node])
     println(source)
     println("PPrint =============================")
 
